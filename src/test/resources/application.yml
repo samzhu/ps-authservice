@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: AuthService
+  profiles:
+    active: test
+  jackson:
+    date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
+    time-zone: UTC
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_DELAY=-1
+    initialize: false
+    sql-script-encoding: UTF-8
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: H2
+    show-sql: true
+    generate-ddl: false
+
+logging:
+  file: D:/logs/auth-test.log
+  level:
+    root: Info
+    com.ps: debug
+

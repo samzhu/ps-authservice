@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: ${dburl:jdbc:mysql://10.0.0.162:3306/testoauth?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&useSSL=false&preferredTestQuery=select now()}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${dbusername:mysql162}
+    password: ${dbpassword:!QAZ2wsx}
+  jpa:
+    show-sql: false
+
+logging:
+  file: D:/logs/auth-dev.log
+  level:
+    root: Info
+    org.springframework: info
+    com.ps: debug
+    com.xxx.ooo.spring: 'OFF'
+
+port: 8081

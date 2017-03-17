@@ -1,0 +1,37 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.2.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile('org.springframework.boot:spring-boot-starter-security')
+    compile 'org.springframework.security.oauth:spring-security-oauth2:2.0.12.RELEASE'
+    compile 'org.springframework.security:spring-security-jwt:1.0.7.RELEASE'
+    compile 'org.apache.commons:commons-lang3:3.5'
+    compile 'org.modelmapper:modelmapper:0.7.7'
+    compile 'mysql:mysql-connector-java:6.0.5'
+    compile 'io.jsonwebtoken:jjwt:0.7.0'
+    compileOnly('org.projectlombok:lombok')
+    testRuntime('com.h2database:h2')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
