@@ -338,7 +338,9 @@ response
 ```
 
 輸入正確帳密之後後有個授權清單頁面
+
 ![](http://i.imgur.com/j86f7HR.png)
+
 同意之後就會產生 Token 透過瀏覽器 轉回客戶端設定的 http://www.google.com.tw 網址如下
 ```
 https://www.google.com.tw/?gws_rd=ssl#access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiY29tbW9uIiwiZnJpZW5kIiwidXNlciJdLCJ1c2VyX25hbWUiOiJwYXBpZGFrb3MiLCJzY29wZSI6WyJjb21tb24iLCJ1c2VyLnJlYWRvbmx5IiwiZnJpZW5kIl0sImV4cCI6MTQ4NzIyNzI1MSwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjcxNjU3ZmNlLTdmNTktNDMwYi1hMjUzLTc5MmNiYzZjZmMyYSIsImNsaWVudF9pZCI6IndlYiJ9.xKktY90aizvAFaR7W1eJzn4NIQLuIaaG88lfTQzSNlQ&token_type=bearer&expires_in=3599&scope=common%20user.readonly%20friend&jti=71657fce-7f59-430b-a253-792cbc6cfc2a
