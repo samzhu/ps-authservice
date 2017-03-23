@@ -352,9 +352,12 @@ AuthServer 這邊就已經可以用了
 Resource Server 則不一定需要套 Spring Security 你也可以簡單使用 Filter 、 LocalThread 、 JWT 套件 就可以達成
 那些 x-xss-protection 再自己加上也蠻快的
 
-參考資料
+## 參考資料
  - [OAuth 2 Developers Guide](http://projects.spring.io/spring-security-oauth/docs/oauth2.html#oauth-2.0-client)
  - [Spring Security 4官方文档中文翻译与源码解读](http://www.tianshouzhi.com/api/tutorials/spring_security_4)
  - [spring boot 整合 spring security4](http://www.jianshu.com/p/95103b29c0c2)
  - [Spring Oauth2 入门](http://xiayule.net/notes/spring-oauth2-introduce)
  - [OAuth2RestTemplate is not thread-safe](https://github.com/spring-projects/spring-security-oauth/issues/554)
+
+## 程式碼
+[https://github.com/samzhu/ps-authservice](https://github.com/samzhu/ps-authservice)
