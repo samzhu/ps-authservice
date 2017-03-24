@@ -59,11 +59,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+//    @Override
+//    @Bean
+//    public AuthenticationManager authenticationManagerBean() throws Exception {
+//        return super.authenticationManagerBean();
+//    }
 
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
@@ -75,12 +75,14 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public CustomTokenServices getDefaultTokenServices() {
+    public CustomTokenServices getDefaultTokenServices() throws Exception {
         CustomTokenServices tokenServices = new CustomTokenServices();
+        tokenServices.setAuthenticationManager(authenticationManagerBean());
         tokenServices.setTokenStore(tokenStore());
         tokenServices.setAccessTokenEnhancer(jwtAccessTokenConverter());
         tokenServices.setClientDetailsService(customJdbcClientDetailsService);
         tokenServices.setScopService(scopService);
+        tokenServices.setSupportRefreshToken(true);
         return tokenServices;
     }
 }

@@ -2,15 +2,23 @@ package com.ps.security;
 
 import com.ps.service.ScopService;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.common.*;
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
+import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.*;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.*;
@@ -21,13 +29,16 @@ import java.util.stream.Collectors;
  */
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 @Slf4j
 public class CustomTokenServices extends DefaultTokenServices {
 
     private ClientDetailsService clientDetailsService;
+    private AuthenticationManager authenticationManager;
     private TokenStore tokenStore;
     private TokenEnhancer accessTokenEnhancer;
     private boolean supportRefreshToken = false;
+    private boolean reuseRefreshToken = true;
 
     private ScopService scopService;
 
@@ -130,6 +141,63 @@ public class CustomTokenServices extends DefaultTokenServices {
         return accessTokenEnhancer != null ? accessTokenEnhancer.enhance(token, authentication) : token;
     }
 
+    @Transactional(noRollbackFor = {InvalidTokenException.class, InvalidGrantException.class})
+    public OAuth2AccessToken refreshAccessToken(String refreshTokenValue, TokenRequest tokenRequest) throws AuthenticationException {
+        log.debug(">> CustomTokenServices.refreshAccessToken refreshTokenValue={}, tokenRequest={}", refreshTokenValue, tokenRequest);
+
+        log.debug(">> CustomTokenServices.refreshAccessToken supportRefreshToken={}", supportRefreshToken);
+        log.debug(">> CustomTokenServices.refreshAccessToken authenticationManager={}", authenticationManager);
+        if (!supportRefreshToken) {
+            throw new InvalidGrantException("Invalid refresh token: " + refreshTokenValue);
+        }
+
+        OAuth2RefreshToken refreshToken = tokenStore.readRefreshToken(refreshTokenValue);
+        if (refreshToken == null) {
+            throw new InvalidGrantException("Invalid refresh token: " + refreshTokenValue);
+        }
+
+        OAuth2Authentication authentication = tokenStore.readAuthenticationForRefreshToken(refreshToken);
+        // 這一段用不到
+//        if (this.authenticationManager != null && !authentication.isClientOnly()) {
+//            // The client has already been authenticated, but the user authentication might be old now, so give it a
+//            // chance to re-authenticate.
+//            Authentication user = new PreAuthenticatedAuthenticationToken(authentication.getUserAuthentication(), "", authentication.getAuthorities());
+//            log.debug(">> CustomTokenServices.refreshAccessToken user={}", user);
+//            user = authenticationManager.authenticate(user);
+//            log.debug(">> CustomTokenServices.refreshAccessToken 3");
+//            Object details = authentication.getDetails();
+//            authentication = new OAuth2Authentication(authentication.getOAuth2Request(), user);
+//            authentication.setDetails(details);
+//        }
+//        String clientId = authentication.getOAuth2Request().getClientId();
+//        if (clientId == null || !clientId.equals(tokenRequest.getClientId())) {
+//            throw new InvalidGrantException("Wrong client for this refresh token: " + refreshTokenValue);
+//        }
+
+        // clear out any access tokens already associated with the refresh
+        // token.
+//        tokenStore.removeAccessTokenUsingRefreshToken(refreshToken);
+
+        if (isExpired(refreshToken)) {
+            tokenStore.removeRefreshToken(refreshToken);
+            throw new InvalidTokenException("Invalid refresh token (expired): " + refreshToken);
+        }
+
+        authentication = createRefreshedAuthentication(authentication, tokenRequest);
+
+        if (!reuseRefreshToken) {
+            tokenStore.removeRefreshToken(refreshToken);
+            refreshToken = createRefreshToken(authentication);
+        }
+
+        OAuth2AccessToken accessToken = createAccessToken(authentication, refreshToken);
+        tokenStore.storeAccessToken(accessToken, authentication);
+        if (!reuseRefreshToken) {
+            tokenStore.storeRefreshToken(accessToken.getRefreshToken(), authentication);
+        }
+        return accessToken;
+    }
+
     private OAuth2RefreshToken createRefreshToken(OAuth2Authentication authentication) {
         if (!isSupportRefreshToken(authentication.getOAuth2Request())) {
             return null;
@@ -143,7 +211,33 @@ public class CustomTokenServices extends DefaultTokenServices {
         return new DefaultOAuth2RefreshToken(value);
     }
 
+    /**
+     * Create a refreshed authentication.
+     *
+     * @param authentication The authentication.
+     * @param request        The scope for the refreshed token.
+     * @return The refreshed authentication.
+     * @throws InvalidScopeException If the scope requested is invalid or wider than the original scope.
+     */
+    private OAuth2Authentication createRefreshedAuthentication(OAuth2Authentication authentication, TokenRequest request) {
+        OAuth2Authentication narrowed = authentication;
+        Set<String> scope = request.getScope();
+        OAuth2Request clientAuth = authentication.getOAuth2Request().refresh(request);
+        if (scope != null && !scope.isEmpty()) {
+            Set<String> originalScope = clientAuth.getScope();
+            if (originalScope == null || !originalScope.containsAll(scope)) {
+                throw new InvalidScopeException("Unable to narrow the scope of the client authentication to " + scope
+                        + ".", originalScope);
+            } else {
+                clientAuth = clientAuth.narrowScope(scope);
+            }
+        }
+        narrowed = new OAuth2Authentication(clientAuth, authentication.getUserAuthentication());
+        return narrowed;
+    }
+
     protected boolean isSupportRefreshToken(OAuth2Request clientAuth) {
+        log.debug(">> CustomTokenServices.isSupportRefreshToken clientAuth={}", clientAuth);
         if (clientDetailsService != null) {
             ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId());
             return client.getAuthorizedGrantTypes().contains("refresh_token");
