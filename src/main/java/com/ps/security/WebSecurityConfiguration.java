@@ -1,5 +1,6 @@
 package com.ps.security;
 
+import com.ps.service.ScopService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
@@ -24,11 +26,16 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomUserDetailsAuthenticationProvider customUserDetailsAuthenticationProvider;
+    @Autowired
+    private CustomJdbcClientDetailsService customJdbcClientDetailsService;
+    @Autowired
+    private ScopService scopService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         log.info(">> WebSecurityConfiguration.configure AuthenticationManagerBuilder={}", auth);
         auth.authenticationProvider(customUserDetailsAuthenticationProvider);
+        log.info("<< WebSecurityConfiguration.configure AuthenticationManagerBuilder");
     }
 
     @Override
@@ -63,7 +70,17 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         final JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
         jwtAccessTokenConverter.setSigningKey("ASDFASFsdfsdfsdfsfadsf234asdfasfdas");
         // 註解掉的原因是因為跟原本的一樣，但記錄一下如果需要特別調整可以在這調
-        //jwtAccessTokenConverter.setAccessTokenConverter(new CustomAccessTokenConverter());
+        // jwtAccessTokenConverter.setAccessTokenConverter(new CustomAccessTokenConverter());
         return jwtAccessTokenConverter;
+    }
+
+    @Bean
+    public CustomTokenServices getDefaultTokenServices() {
+        CustomTokenServices tokenServices = new CustomTokenServices();
+        tokenServices.setTokenStore(tokenStore());
+        tokenServices.setAccessTokenEnhancer(jwtAccessTokenConverter());
+        tokenServices.setClientDetailsService(customJdbcClientDetailsService);
+        tokenServices.setScopService(scopService);
+        return tokenServices;
     }
 }

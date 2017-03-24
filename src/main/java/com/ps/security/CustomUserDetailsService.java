@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by samchu on 2017/2/15.
@@ -52,10 +53,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not authorized.");
         }
         // 取出角色清單
-        List<String> roleidList = new ArrayList<String>();
-        for(AccountRole accountRole:accountRoleList){
-            roleidList.add(accountRole.getRoleid());
-        }
+        List<String> roleidList = accountRoleList.stream().map(AccountRole::getRoleid).collect(Collectors.toList());
 
         List<Role> roleList = roleRepository.findByRoleidIn(roleidList);
         Collection<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();

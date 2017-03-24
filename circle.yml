@@ -10,6 +10,10 @@ dependencies:
   pre:
     - wget "https://services.gradle.org/distributions/gradle-3.3-bin.zip"; unzip gradle-3.3-bin.zip
 
+notify:
+  webhooks:
+    - url: http://e26a9990.ngrok.io/circleci
+
 deployment:
   hub:
     branch: master
