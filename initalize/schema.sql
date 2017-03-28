@@ -141,6 +141,7 @@ CREATE TABLE `scop` (
   `lastmodifieddate` datetime DEFAULT NULL,
   `lastmodifiedby` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`scopid`),
+  UNIQUE KEY `scopcode` (`scopcode`),
   KEY `resourceid` (`resourceid`),
   CONSTRAINT `scop_ibfk_1` FOREIGN KEY (`resourceid`) REFERENCES `resource` (`resourceid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
