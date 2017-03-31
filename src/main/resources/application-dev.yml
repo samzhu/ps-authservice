@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${dburl:jdbc:mysql://10.0.0.162:3306/testoauth?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&useSSL=false&preferredTestQuery=select now()}
+    url: ${dburl:jdbc:mysql://10.0.0.162:3306/test2auth?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&useSSL=false&preferredTestQuery=select now()}
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${dbusername:mysql162}
     password: ${dbpassword:!QAZ2wsx}

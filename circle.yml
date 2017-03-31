@@ -19,7 +19,7 @@ deployment:
     branch: master
     commands:
       - gradle build
-      - mv build/libs/ps-authservice-0.0.1-SNAPSHOT.jar "ps-authservice-$CIRCLE_BUILD_NUM.jar"
+      - cp build/libs/ps-authservice-0.0.1-SNAPSHOT.jar "build/libs/ps-authservice-$CIRCLE_BUILD_NUM.jar"
       - cp -R build/libs $CIRCLE_ARTIFACTS
       - docker build -t "spike234/ps-authservice:$CIRCLE_BUILD_NUM" .
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
