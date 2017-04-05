@@ -110,143 +110,12 @@ if (token.getExpiration() != null) {
 
 ### 在 WebSecurityConfiguration 註冊元件
 
-``` java WebSecurityConfiguration.java
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-
-/**
- * Created by samchu on 2017/2/15.
- */
-
-@Slf4j
-@Configuration
-@EnableWebSecurity
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private CustomUserDetailsAuthenticationProvider customUserDetailsAuthenticationProvider;
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        log.info(">> WebSecurityConfiguration.configure AuthenticationManagerBuilder={}", auth);
-        auth.authenticationProvider(customUserDetailsAuthenticationProvider);
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin().and()
-                .httpBasic();
-    }
-
-    @Bean
-    public TokenStore tokenStore() {
-        //JdbcTokenStore jdbcTokenStore = new JdbcTokenStore(dataSource);
-        return new CustomTokenStore();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Override
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
-    @Bean
-    public JwtAccessTokenConverter jwtAccessTokenConverter() {
-        final JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        jwtAccessTokenConverter.setSigningKey("ASDFASFsdfsdfsdfsfadsf234asdfasfdas");
-        // 註解掉的原因是因為跟原本的一樣，但記錄一下如果需要特別調整可以在這調
-        //jwtAccessTokenConverter.setAccessTokenConverter(new CustomAccessTokenConverter());
-        return jwtAccessTokenConverter;
-    }
-}
-```
-
+**請參考 com.ps.security.WebSecurityConfiguration.java 實作**
 
 ### 配置 AuthorizationServer 並把我們服務組件組裝起來
 
-``` java AuthorizationServerConfiguration.java
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+**請參考 com.ps.security.AuthorizationServerConfiguration.java 實作**
 
-/**
- * Created by samchu on 2017/2/15.
- */
-@Configuration
-@EnableAuthorizationServer
-public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private CustomJdbcClientDetailsService customJdbcClientDetailsService;
-    @Autowired
-    private CustomTokenServices tokenServices;
-
-    @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints
-                .tokenStore(tokenStore)
-                .userDetailsService(userDetailsService)
-                .authenticationManager(authenticationManager)
-                .accessTokenConverter(jwtAccessTokenConverter);
-    }
-
-    @Override
-    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.withClientDetails(customJdbcClientDetailsService);
-        /* 下面寫法已不使用，因為我們 client 資料已存在資料庫了
-        clients
-                .inMemory()
-                .withClient("clientapp")
-                .authorizedGrantTypes("password", "refresh_token")
-                .scopes("account", "account.readonly", "role", "role.readonly")
-                .resourceIds("account")
-                .secret("123456").accessTokenValiditySeconds(3600).refreshTokenValiditySeconds(3600)
-                .and()
-                .withClient("clientkpi")
-                .authorizedGrantTypes("password", "refresh_token")
-                .scopes("account", "account.readonly", "role", "role.readonly")
-                .resourceIds("account", "kpi")
-                .secret("123456").accessTokenValiditySeconds(3600).refreshTokenValiditySeconds(3600)
-                .and()
-                .withClient("web")
-                .redirectUris("http://www.google.com.tw")
-                .secret("123456")
-                .authorizedGrantTypes("implicit")
-                .scopes("account", "account.readonly", "role", "role.readonly")
-                .resourceIds("friend", "common", "user")
-                .accessTokenValiditySeconds(3600);
-         */
-    }
-}
-```
 
 怎麼設計 Scope 也許可以參考 [https://developers.google.com/identity/protocols/googlescopes](https://developers.google.com/identity/protocols/googlescopes)
 Client 其實也可以配置到資料庫中，不過我們還沒對外開放，所以還不需要。
@@ -254,24 +123,7 @@ Client 其實也可以配置到資料庫中，不過我們還沒對外開放，�
 web 則是 implicit 外部一次性授權 網頁方式授權
 忘記了就回上面看吧
 
-啟動主程式
-``` java AuthApplication.java
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-@EnableJpaAuditing
-//@EnableTransactionManagement
-@SpringBootApplication
-public class AuthApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(AuthApplication.class, args);
-    }
-}
-```
-
+啟動主程式 AuthApplication.java
 
 ## 測試
 
