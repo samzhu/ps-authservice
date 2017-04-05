@@ -63,7 +63,7 @@ CREATE TABLE `account_role` (
 -- ----------------------------
 DROP TABLE IF EXISTS `resource`;
 CREATE TABLE `resource` (
-  `resourceid` varchar(20) NOT NULL COMMENT '資源id',
+  `resourceid` varchar(50) NOT NULL COMMENT '資源id',
   `label` varchar(255) DEFAULT NULL COMMENT '說明標籤',
   `createddate` datetime NOT NULL,
   `createdby` varchar(10) NOT NULL,
@@ -115,7 +115,7 @@ DROP TABLE IF EXISTS `oauth_client_resource`;
 CREATE TABLE `oauth_client_resource` (
   `serid` varchar(10) NOT NULL COMMENT '隨機產生',
   `clientid` varchar(50) NOT NULL COMMENT '指定OAuth2 client ID',
-  `resourceid` varchar(20) NOT NULL COMMENT '指定客戶端相關的資源id',
+  `resourceid` varchar(50) NOT NULL COMMENT '指定客戶端相關的資源id',
   `createddate` datetime NOT NULL,
   `createdby` varchar(10) NOT NULL,
   `lastmodifieddate` datetime DEFAULT NULL,

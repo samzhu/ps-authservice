@@ -53,14 +53,14 @@ public class AuthApplicationTests {
     @Test
     public void roleIsExist() throws Exception {
         // 確認角色存在
-        Role role = roleRepository.findOne("0000000000");
+        Role role = roleRepository.findOne("0000000001");
         assertThat(role.getCode()).isEqualTo("ROLE_ADMIN");
     }
 
     @Test
     public void testOauthToken() {
         // 確認取得 token
-        String clientid = "clientapp";
+        String clientid = "accountservice";
         String clientpw = "123456";
         String username = "admin";
         String password = "123456";
@@ -72,7 +72,7 @@ public class AuthApplicationTests {
 
     @Test
     public void testRefreshToken() {
-        String clientid = "clientapp";
+        String clientid = "accountservice";
         String clientpw = "123456";
         String username = "admin";
         String password = "123456";
