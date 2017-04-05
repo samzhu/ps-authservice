@@ -15,4 +15,10 @@ logging:
     com.ps: debug
     com.xxx.ooo.spring: 'OFF'
 
+security:
+  oauth2:
+    resource:
+      jwt:
+        key-value: UupLCm#RGzWnmX6zMU&9
+
 port: 8081

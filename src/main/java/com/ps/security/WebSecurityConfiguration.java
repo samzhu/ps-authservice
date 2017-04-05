@@ -3,6 +3,7 @@ package com.ps.security;
 import com.ps.service.ScopService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +31,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private CustomJdbcClientDetailsService customJdbcClientDetailsService;
     @Autowired
     private ScopService scopService;
+    @Autowired
+    private ResourceServerProperties resourceServerProperties;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -68,7 +71,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         final JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        jwtAccessTokenConverter.setSigningKey("ASDFASFsdfsdfsdfsfadsf234asdfasfdas");
+        // 改成讀取設定擋的
+        jwtAccessTokenConverter.setSigningKey(resourceServerProperties.getJwt().getKeyValue());
         // 註解掉的原因是因為跟原本的一樣，但記錄一下如果需要特別調整可以在這調
         // jwtAccessTokenConverter.setAccessTokenConverter(new CustomAccessTokenConverter());
         return jwtAccessTokenConverter;

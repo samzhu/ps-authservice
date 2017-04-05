@@ -55,11 +55,13 @@ JWT 介紹網路有很多
 
 會建立一個用戶 admin 密碼為 123456
 
-![schema](http://i.imgur.com/1qj0okE.png)
+新增加的資料表可以控制 scop 跟 client
+![schema](http://i.imgur.com/4agX5Dk.png)
 
 ### OAuth 流程
 其實 Spring Security 有個預設的流程 [org.springframework.security.oauth2.provider.token.DefaultTokenService](https://github.com/spring-projects/spring-security-oauth/blob/master/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/provider/token/DefaultTokenServices.java) 可以去看看
-但我們不用修改這套流程
+我們現在要客製化自己的流程，讓 AuthService 可以依照用戶實際關聯的權限給予 scop
+實作請參考 com.ps.security.CustomTokenServices
 
 ### 實作 TokenStore
 Spring Security 預設的 [org.springframework.security.oauth2.provider.token.store.JdbcTokenStore](https://github.com/spring-projects/spring-security-oauth/blob/master/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/provider/token/store/JdbcTokenStore.java) 管理方式是 Single sign-on 也就是會踢掉前一次登入的 Token ，但是這並不符合我們要的
