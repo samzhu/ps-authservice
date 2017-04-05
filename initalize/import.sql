@@ -14,8 +14,6 @@ INSERT INTO `role` (`roleid`, `code`, `label`, `createddate`, `createdby`, `last
 -- ----------------------------
 INSERT INTO `account_role` (`serid`, `accountid`, `roleid`, `createddate`, `createdby`, `lastmodifieddate`, `lastmodifiedby`) VALUES ('0000000000', '0000000000', '0000000000', CURRENT_TIMESTAMP, '0000000000', CURRENT_TIMESTAMP, '0000000000');
 
--- 新增關於 role 跟 scop 對應的表格
-
 -- ----------------------------
 -- Records of resource
 -- ----------------------------
@@ -24,7 +22,7 @@ INSERT INTO `resource` (`resourceid`, `label`, `createddate`, `createdby`, `last
 -- ----------------------------
 -- Records of oauth_client_details
 -- ----------------------------
-INSERT INTO `oauth_client_details` (`clientid`, `client_secret`, `web_server_redirect_uri`, `access_token_validity`, `refresh_token_validity`, `additional_information`, `autoapprove`, `createddate`, `createdby`, `lastmodifieddate`, `lastmodifiedby`) VALUES ('clientapp', '123456', NULL, '3600', '7200', '{\"scopRangeBy\":\"role\"}', NULL, CURRENT_TIMESTAMP, '0000000000', CURRENT_TIMESTAMP, '0000000000');
+INSERT INTO `oauth_client_details` (`clientid`, `client_secret`, `web_server_redirect_uri`, `access_token_validity`, `refresh_token_validity`, `additional_information`, `autoapprove`, `createddate`, `createdby`, `lastmodifieddate`, `lastmodifiedby`) VALUES ('clientapp', '123456', NULL, '86400', '604800', '{\"scopRangeBy\":\"role\"}', NULL, CURRENT_TIMESTAMP, '0000000000', CURRENT_TIMESTAMP, '0000000000');
 
 -- ----------------------------
 -- Records of oauth_client_grant_types
@@ -35,7 +33,7 @@ INSERT INTO `oauth_client_grant_types` (`serid`, `clientid`, `granttype`, `creat
 -- ----------------------------
 -- Records of oauth_client_resource
 -- ----------------------------
-INSERT INTO `oauth_client_resource` (`serid`, `clientid`, `resourceid`, `createddate`, `createdby`, `lastmodifieddate`, `lastmodifiedby`) VALUES ('000000000', 'clientapp', 'account', CURRENT_TIMESTAMP, '0000000000', CURRENT_TIMESTAMP, '0000000000');
+INSERT INTO `oauth_client_resource` (`serid`, `clientid`, `resourceid`, `createddate`, `createdby`, `lastmodifieddate`, `lastmodifiedby`) VALUES ('0000000000', 'clientapp', 'account', CURRENT_TIMESTAMP, '0000000000', CURRENT_TIMESTAMP, '0000000000');
 
 -- ----------------------------
 -- Records of scop
