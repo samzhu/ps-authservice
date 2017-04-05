@@ -18,6 +18,12 @@ spring:
     show-sql: true
     generate-ddl: false
 
+security:
+  oauth2:
+    resource:
+      jwt:
+        key-value: UupLCm#RGzWnmX6zMU&9
+
 logging:
   file: D:/logs/auth-test.log
   level:
