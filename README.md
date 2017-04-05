@@ -203,11 +203,11 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Autowired
     private CustomUserDetailsService userDetailsService;
     @Autowired
-    private JwtAccessTokenConverter jwtAccessTokenConverter;
-    @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
-    private TokenStore tokenStore;
+    private CustomJdbcClientDetailsService customJdbcClientDetailsService;
+    @Autowired
+    private CustomTokenServices tokenServices;
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
@@ -220,6 +220,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.withClientDetails(customJdbcClientDetailsService);
+        /* 下面寫法已不使用，因為我們 client 資料已存在資料庫了
         clients
                 .inMemory()
                 .withClient("clientapp")
@@ -241,6 +243,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                 .scopes("account", "account.readonly", "role", "role.readonly")
                 .resourceIds("friend", "common", "user")
                 .accessTokenValiditySeconds(3600);
+         */
     }
 }
 ```
