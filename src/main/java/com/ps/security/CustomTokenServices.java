@@ -29,9 +29,12 @@ import java.util.stream.Collectors;
  */
 
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 @Slf4j
 public class CustomTokenServices extends DefaultTokenServices {
+    private int refreshTokenValiditySeconds = 60 * 60 * 24 * 30; // default 30 days.
+
+    private int accessTokenValiditySeconds = 60 * 60 * 12; // default 12 hours.
 
     private ClientDetailsService clientDetailsService;
     private AuthenticationManager authenticationManager;
@@ -126,12 +129,14 @@ public class CustomTokenServices extends DefaultTokenServices {
 //                scopRangeByRole = true;
 //            }
 //        }
-
+        log.debug("CustomTokenServices.createAccessToken scopRangeByRole={}", scopRangeByRole);
         if (scopRangeByRole == Boolean.TRUE) {
             // 這邊依照角色資料庫實際的權限來核發
             List<String> resourceidList = authentication.getOAuth2Request().getResourceIds().stream().collect(Collectors.toList());
+            log.debug("CustomTokenServices.createAccessToken resourceidList={}", resourceidList);
             List<String> rolecodeList = authentication.getUserAuthentication().getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
             Set<String> scopSet = scopService.generationByRole(resourceidList, rolecodeList);
+            log.debug("CustomTokenServices.createAccessToken scopSet={}", scopSet);
             token.setScope(scopSet);
         } else {
             // 如果沒有特殊需求則依照申請範圍
@@ -243,5 +248,35 @@ public class CustomTokenServices extends DefaultTokenServices {
             return client.getAuthorizedGrantTypes().contains("refresh_token");
         }
         return this.supportRefreshToken;
+    }
+
+    protected int getAccessTokenValiditySeconds(OAuth2Request clientAuth) {
+        log.debug(">> CustomTokenServices.getAccessTokenValiditySeconds clientAuth={}", clientAuth);
+        if (clientDetailsService != null) {
+            ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId());
+            Integer validity = client.getAccessTokenValiditySeconds();
+            if (validity != null) {
+                return validity;
+            }
+        }
+        return accessTokenValiditySeconds;
+    }
+
+    /**
+     * The refresh token validity period in seconds
+     *
+     * @param clientAuth the current authorization request
+     * @return the refresh token validity period in seconds
+     */
+    protected int getRefreshTokenValiditySeconds(OAuth2Request clientAuth) {
+        log.debug(">> CustomTokenServices.getRefreshTokenValiditySeconds clientAuth={}", clientAuth);
+        if (clientDetailsService != null) {
+            ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId());
+            Integer validity = client.getRefreshTokenValiditySeconds();
+            if (validity != null) {
+                return validity;
+            }
+        }
+        return refreshTokenValiditySeconds;
     }
 }

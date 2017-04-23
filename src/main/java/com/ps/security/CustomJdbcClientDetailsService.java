@@ -55,10 +55,12 @@ public class CustomJdbcClientDetailsService implements ClientDetailsService, Cli
         details.setResourceIds(resourceids);
         details.setScope(scops);
         details.setAuthorizedGrantTypes(grantTypes);
+        details.setAccessTokenValiditySeconds(oauthClient.getAccessTokenValidity());
+        details.setRefreshTokenValiditySeconds(oauthClient.getRefreshTokenValidity());
 
         // 這不用設定，在帳號驗證那邊會給值 CustomUserDetailsService.loadUserByUsername
         //details.setAuthorities(authorities);
-        // 這邊會給這個 client 所有可申請的範圍，在Token轉換的時候把不適合該腳色權限踢掉
+        // 這邊會給這個 client 所有可申請的範圍，在Token轉換的時候把不適合該角色權限踢掉
         details.setAutoApproveScopes(scops);
         if (StringUtils.hasText(oauthClient.getWebServerRedirectUri())) {
             details.setRegisteredRedirectUri(Arrays.stream(oauthClient.getWebServerRedirectUri().split(",")).collect(Collectors.toSet()));
