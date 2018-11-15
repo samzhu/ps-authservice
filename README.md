@@ -1,5 +1,6 @@
 # 使用 JWT 跟 OAuth2 來實作授權系統(spring-security)
 
+改了一版 SpringCloud 的版本, 配置也稍微簡化過, 如果要用可以這邊去 [Demo SpringCloud OAuth2 Jwt](https://github.com/samzhu/demo-springcloud-oauth-jwt) 
 
 ## 什麼是 JWT ?
 
