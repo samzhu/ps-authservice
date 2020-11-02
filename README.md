@@ -217,11 +217,11 @@ Resource Server 則不一定需要套 Spring Security 你也可以簡單使用 F
  - [Spring Oauth2 入门](http://xiayule.net/notes/spring-oauth2-introduce)
  - [OAuth2RestTemplate is not thread-safe](https://github.com/spring-projects/spring-security-oauth/issues/554)
  
+ ## Stargazers
  [![Stargazers repo roster for @samzhu/ps-authservice](https://reporoster.com/stars/samzhu/ps-authservice)](https://github.com/samzhu/ps-authservice/stargazers)
  
+ ## Forkers
  [![Forkers repo roster for @samzhu/ps-authservice](https://reporoster.com/forks/samzhu/ps-authservice)](https://github.com/samzhu/ps-authservice/network/members)
- 
- 
 
 ## 程式碼
 [https://github.com/samzhu/ps-authservice](https://github.com/samzhu/ps-authservice)
